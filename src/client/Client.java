@@ -3,7 +3,6 @@ package client;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
-
 import javax.swing.JTextArea;
 
 /*
@@ -16,29 +15,30 @@ public class Client {
 
 	private ClientConnection clientConnection;
 	private Socket socket;
-	
+
 	/**
 	 * Creates a Client object consisting of a ClientConnection, Socket
 	 * 
 	 * @precondition textChat != null, username != null
 	 * @postcondtition this.socket = new Socket("localhost", 6066)
-	 * 				   this.clientConnection = new ClientConnection, this.socket, this.username)
+	 *                 this.clientConnection = new ClientConnection, this.socket,
+	 *                 this.username)
 	 */
 	public Client(JTextArea textChat, String username) {
 		try {
 			this.socket = new Socket("localhost", 6066);
 			this.clientConnection = new ClientConnection(this.socket, textChat, username);
-		} 
-		catch (UnknownHostException e) {
+		} catch (UnknownHostException e) {
 			e.printStackTrace();
-		} 
-		catch (IOException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
-	 * Starts the ClientConnection and sends a message to the server with the ClientConnection's username
+	 * Starts the ClientConnection and sends a message to the server with the
+	 * ClientConnection's username
+	 * 
 	 * @precondition none
 	 * @postcondition none
 	 */
@@ -46,19 +46,22 @@ public class Client {
 		this.clientConnection.start();
 		this.clientConnection.sendMessageToServer(this.clientConnection.getName() + " has joined the chat.");
 	}
-	
+
 	/**
 	 * Sends message to server using ClientConnection object
+	 * 
 	 * @precondition none
 	 * @postcondition none
-	 * @param message Message being sent
+	 * @param message
+	 *            Message being sent
 	 */
 	public void sendMessageToServer(String message) {
 		this.clientConnection.sendMessageToServer(this.clientConnection.getName() + ": " + message);
 	}
-	
+
 	/**
 	 * Displays exiting message including ClientConnection's username
+	 * 
 	 * @precondition none
 	 * @postcondition none
 	 */

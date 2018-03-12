@@ -1,12 +1,9 @@
 package driver;
 
 import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-
 import java.awt.Canvas;
-
 import javax.swing.JTextField;
 import javax.swing.JTextArea;
 import javax.swing.JButton;
@@ -17,11 +14,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
-
+import javax.swing.text.DefaultCaret;
 import client.Client;
-import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
 
 public class ChatGUI {
 
@@ -31,7 +26,7 @@ public class ChatGUI {
 	private JLabel usernameLabel;
 	private JButton enterButton;
 	private Canvas chatCanvas;
-	
+
 	private Client client;
 	private JScrollPane scrollPane;
 
@@ -39,7 +34,7 @@ public class ChatGUI {
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
-		
+
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -66,13 +61,13 @@ public class ChatGUI {
 		initializeTextArea();
 		initializeInputMessageField();
 		initializeEnterButton();
-	
+
 		String username = JOptionPane.showInputDialog("Please enter your username: ");
 		this.client = new Client(this.allMessagesTextArea, username);
 		initializeUsernameLabel(username);
 		this.client.start();
-		
-		sendMessageUponExit();		
+
+		sendMessageUponExit();
 	}
 
 	private void initializeFrame() {
@@ -91,15 +86,13 @@ public class ChatGUI {
 	}
 
 	private void sendMessageUponExit() {
-		frameChatApplication.addWindowListener(new WindowAdapter()
-	      {
-	         public void windowClosing(WindowEvent e)
-	         {
-	           client.exitApplication();
-			   inputMessageField.setText("");
-	           System.exit(0);
-	         }
-	      });
+		frameChatApplication.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {
+				client.exitApplication();
+				inputMessageField.setText("");
+				System.exit(0);
+			}
+		});
 	}
 
 	private void initializeEnterButton() {
@@ -111,7 +104,7 @@ public class ChatGUI {
 				inputMessageField.setText("");
 			}
 		});
-		
+
 		enterButton.setBounds(453, 315, 143, 46);
 		frameChatApplication.getContentPane().add(enterButton);
 	}
@@ -142,5 +135,7 @@ public class ChatGUI {
 		scrollPane.setViewportView(allMessagesTextArea);
 		allMessagesTextArea.setFont(new Font("Monospaced", Font.PLAIN, 15));
 		allMessagesTextArea.setEditable(false);
+		DefaultCaret caret = (DefaultCaret) allMessagesTextArea.getCaret();
+		caret.setUpdatePolicy(DefaultCaret.OUT_BOTTOM);
 	}
 }
