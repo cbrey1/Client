@@ -1,9 +1,12 @@
 package client;
 
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+
+import javax.swing.JTextArea;
 
 /*
  * ClientConnection class for Multi-Threaded Chat Application
@@ -17,18 +20,21 @@ public class ClientConnection extends Thread {
 	private DataInputStream dataInputStream;
 	private DataOutputStream dataOutputStream;
 	private boolean activeConnection;
+	private JTextArea chat;
 
 	/**
 	 * Creates a ClientConnection object with passed in socket and the Client's username
 	 * 
-	 * @precondition socket != null, username != null
+	 * @precondition socket != null, username != null, textArea != null
 	 * @postcondition this.getName() = username, this.socket = socket,
-	 * 						 this.dataInputStream = this.socket.getInputStream(), this.dataOutputStream = this.socket.getOutputStream(),
-	 * 								this.activeConnection = false;
+	 * 				  this.dataInputStream = this.socket.getInputStream(), this.dataOutputStream = this.socket.getOutputStream(),
+	 * 				  this.activeConnection = false;
+	 * 				  this.chat = textArea				
 	 * @param socket The Socket the client is using
+	 * @param textArea ChatTextArea
 	 * @param username The Client's username
 	 */
-	public ClientConnection(Socket socket, String username) {
+	public ClientConnection(Socket socket, JTextArea textArea, String username) {
 		super(username);
 		
 		try {
@@ -36,6 +42,7 @@ public class ClientConnection extends Thread {
 			this.dataInputStream = new DataInputStream(this.socket.getInputStream());
 			this.dataOutputStream = new DataOutputStream(this.socket.getOutputStream());
 			this.activeConnection = true;
+			this.chat = textArea;
 		} 
 		catch (IOException e) {
 			e.printStackTrace();
@@ -75,7 +82,13 @@ public class ClientConnection extends Thread {
 				}
 				
 				String message = this.dataInputStream.readUTF();
-				System.out.println(message);
+				if (chat.getText().isEmpty()) {
+					chat.setText(message);
+				}
+				else {
+					chat.setText(chat.getText() + "\n" + message);
+				}
+				
 			}
 			catch (IOException e) {
 				this.closeConnection();

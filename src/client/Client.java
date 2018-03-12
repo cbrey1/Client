@@ -3,7 +3,8 @@ package client;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.Scanner;
+
+import javax.swing.JTextArea;
 
 /*
  * Client class for Multi-Threaded Chat Application
@@ -14,28 +15,19 @@ import java.util.Scanner;
 public class Client {
 
 	private ClientConnection clientConnection;
-	private Scanner scanner;
 	private Socket socket;
-	private String username;
 	
 	/**
-	 * Creates a Client object consisting of a ClientConnection, Socket and Username
+	 * Creates a Client object consisting of a ClientConnection, Socket
 	 * 
-	 * @precondition none
-	 * @postcondtition this.scanner = new Scanner(System.in)
-	 * 				   this.socket = new Socket("localhost", 6066)
-	 * 			       this.username = this.scanner.nextLine()
+	 * @precondition textChat != null, username != null
+	 * @postcondtition this.socket = new Socket("localhost", 6066)
 	 * 				   this.clientConnection = new ClientConnection, this.socket, this.username)
 	 */
-	public Client() {
+	public Client(JTextArea textChat, String username) {
 		try {
-			this.scanner = new Scanner(System.in);
 			this.socket = new Socket("localhost", 6066);
-			
-			System.out.print("Please input your username: ");
-			this.username = this.scanner.nextLine();
-			
-			this.clientConnection = new ClientConnection(this.socket, this.username);
+			this.clientConnection = new ClientConnection(this.socket, textChat, username);
 		} 
 		catch (UnknownHostException e) {
 			e.printStackTrace();
@@ -46,52 +38,31 @@ public class Client {
 	}
 	
 	/**
-	 * Starts the ClientConnection and sends a message to the server with the Client's username
+	 * Starts the ClientConnection and sends a message to the server with the ClientConnection's username
 	 * @precondition none
 	 * @postcondition none
 	 */
 	public void start() {
 		this.clientConnection.start();
-		this.clientConnection.sendMessageToServer(this.clientConnection.getName() + " has joined the chat");
-		this.listenForInput();
+		this.clientConnection.sendMessageToServer(this.clientConnection.getName() + " has joined the chat.");
 	}
 	
-	private void listenForInput() {
-		while(true) {
-			while (!scanner.hasNextLine()) {
-				this.waitOneSecond();
-			}
-			
-			String message = scanner.nextLine();
-			
-			if (this.userWantsToQuit(message)) {
-				this.displayQuitMessage();
-				break;
-			}
-			
-			this.clientConnection.sendMessageToServer(this.clientConnection.getName() + ": " + message);
-		}
-		this.clientConnection.closeConnection();
+	/**
+	 * Sends message to server using ClientConnection object
+	 * @precondition none
+	 * @postcondition none
+	 * @param message Message being sent
+	 */
+	public void sendMessageToServer(String message) {
+		this.clientConnection.sendMessageToServer(this.clientConnection.getName() + ": " + message);
 	}
 	
-	private void waitOneSecond() {
-		try {
-			Thread.sleep(1);
-		}
-		catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	private boolean userWantsToQuit(String input) { return input.toLowerCase().equals("quit"); }
-	
-	private void displayQuitMessage() {
-		try {
-			this.clientConnection.sendMessageToServer(this.username + " has left the chat");
-			Thread.sleep(3);
-		}
-		catch(Exception e) {
-			
-		}
+	/**
+	 * Displays exiting message including ClientConnection's username
+	 * @precondition none
+	 * @postcondition none
+	 */
+	public void exitApplication() {
+		this.clientConnection.sendMessageToServer(this.clientConnection.getName() + " has left the chat.");
 	}
 }
