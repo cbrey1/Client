@@ -19,6 +19,9 @@ import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
 import client.Client;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 
 public class ChatGUI {
 
@@ -30,6 +33,7 @@ public class ChatGUI {
 	private Canvas chatCanvas;
 	
 	private Client client;
+	private JScrollPane scrollPane;
 
 	/**
 	 * Launch the application.
@@ -53,6 +57,7 @@ public class ChatGUI {
 	 */
 	public ChatGUI() {
 		initialize();
+		inputMessageField.requestFocus();
 	}
 
 	private void initialize() {
@@ -67,7 +72,7 @@ public class ChatGUI {
 		initializeUsernameLabel(username);
 		this.client.start();
 		
-		sendMessageUponExit();
+		sendMessageUponExit();		
 	}
 
 	private void initializeFrame() {
@@ -114,7 +119,7 @@ public class ChatGUI {
 	private void initializeInputMessageField() {
 		inputMessageField = new JTextField();
 		inputMessageField.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		inputMessageField.setBounds(118, 314, 323, 46);
+		inputMessageField.setBounds(115, 314, 333, 46);
 		frameChatApplication.getContentPane().add(inputMessageField);
 		inputMessageField.setColumns(10);
 	}
@@ -123,16 +128,19 @@ public class ChatGUI {
 		usernameLabel = new JLabel("");
 		usernameLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		usernameLabel.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		usernameLabel.setBounds(12, 315, 102, 46);
+		usernameLabel.setBounds(12, 315, 91, 46);
 		frameChatApplication.getContentPane().add(usernameLabel);
 		usernameLabel.setText(username);
 	}
 
 	private void initializeTextArea() {
+		scrollPane = new JScrollPane();
+		scrollPane.setAutoscrolls(true);
+		scrollPane.setBounds(12, 13, 584, 289);
+		frameChatApplication.getContentPane().add(scrollPane);
 		allMessagesTextArea = new JTextArea();
+		scrollPane.setViewportView(allMessagesTextArea);
 		allMessagesTextArea.setFont(new Font("Monospaced", Font.PLAIN, 15));
 		allMessagesTextArea.setEditable(false);
-		allMessagesTextArea.setBounds(12, 13, 584, 289);
-		frameChatApplication.getContentPane().add(allMessagesTextArea);
 	}
 }
