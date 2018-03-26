@@ -30,7 +30,7 @@ public class Client {
 	 */
 	public Client(JTextArea textChat, String username) {
 		try {
-			this.socket = new Socket("160.10.217.81", 6066);
+			this.socket = new Socket("localhost", 6066);
 			this.clientConnection = new ClientConnection(this.socket, textChat, username);
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
@@ -48,8 +48,7 @@ public class Client {
 	 */
 	public void start() {
 		this.clientConnection.start();
-		
-		this.clientConnection.sendMessageToServer(this.clientConnection.getName() + " has joined the chat.");
+		this.clientConnection.sendMessageToServer(this.getCurrentTime() + " Server: " + this.clientConnection.getName() + " has joined the chat.");
 	}
 
 	/**
@@ -61,9 +60,7 @@ public class Client {
 	 *            Message being sent
 	 */
 	public void sendMessageToServer(String message) {
-		Date now = new Date(); // java.util.Date, NOT java.sql.Date or java.sql.Timestamp!
-		String format2 = new SimpleDateFormat("dd/M/yy HH:mm", Locale.ENGLISH).format(now);
-		this.clientConnection.sendMessageToServer(format2 + " " + this.clientConnection.getName() + ": " + message);
+		this.clientConnection.sendMessageToServer(this.getCurrentTime() + " " + this.clientConnection.getName() + ": " + message);
 	}
 
 	/**
@@ -73,6 +70,11 @@ public class Client {
 	 * @postcondition none
 	 */
 	public void exitApplication() {
-		this.clientConnection.sendMessageToServer(this.clientConnection.getName() + " has left the chat.");
+		this.clientConnection.sendMessageToServer(this.getCurrentTime() + " Server: " + this.clientConnection.getName() + " has left the chat."); 
+	}
+	
+
+	private String getCurrentTime() {
+		return new SimpleDateFormat("MM/dd/yy HH:mm", Locale.ENGLISH).format(new Date());
 	}
 }
