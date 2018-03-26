@@ -101,6 +101,9 @@ public class ChatGUI {
 		enterButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				client.sendMessageToServer(inputMessageField.getText());
+				if (inputMessageField.getText().equalsIgnoreCase("quit")) {
+					frameChatApplication.dispatchEvent(new WindowEvent(frameChatApplication, WindowEvent.WINDOW_CLOSING));
+				}
 				inputMessageField.setText("");
 			}
 		});

@@ -3,6 +3,10 @@ package client;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 import javax.swing.JTextArea;
 
 /*
@@ -26,7 +30,7 @@ public class Client {
 	 */
 	public Client(JTextArea textChat, String username) {
 		try {
-			this.socket = new Socket("localhost", 6066);
+			this.socket = new Socket("160.10.217.81", 6066);
 			this.clientConnection = new ClientConnection(this.socket, textChat, username);
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
@@ -44,6 +48,7 @@ public class Client {
 	 */
 	public void start() {
 		this.clientConnection.start();
+		
 		this.clientConnection.sendMessageToServer(this.clientConnection.getName() + " has joined the chat.");
 	}
 
@@ -56,7 +61,9 @@ public class Client {
 	 *            Message being sent
 	 */
 	public void sendMessageToServer(String message) {
-		this.clientConnection.sendMessageToServer(this.clientConnection.getName() + ": " + message);
+		Date now = new Date(); // java.util.Date, NOT java.sql.Date or java.sql.Timestamp!
+		String format2 = new SimpleDateFormat("dd/M/yy HH:mm", Locale.ENGLISH).format(now);
+		this.clientConnection.sendMessageToServer(format2 + " " + this.clientConnection.getName() + ": " + message);
 	}
 
 	/**

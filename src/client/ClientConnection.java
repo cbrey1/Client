@@ -113,6 +113,10 @@ public class ClientConnection extends Thread {
 			e.printStackTrace();
 		}
 	}
+	
+	public String getSocketAddress() {
+		return this.socket.getLocalAddress().toString();
+	}
 
 	private void waitOneSecond() {
 		try {
