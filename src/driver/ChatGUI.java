@@ -2,7 +2,6 @@ package driver;
 
 import java.awt.EventQueue;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import java.awt.Canvas;
 import javax.swing.JTextField;
 import javax.swing.JTextArea;
@@ -15,7 +14,8 @@ import java.awt.event.WindowEvent;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.text.DefaultCaret;
-import client.Client;
+import client.ClientConnection;
+
 import javax.swing.JScrollPane;
 
 public class ChatGUI {
@@ -26,9 +26,9 @@ public class ChatGUI {
 	private JLabel usernameLabel;
 	private JButton enterButton;
 	private Canvas chatCanvas;
-
-	private Client client;
 	private JScrollPane scrollPane;
+	
+	private ClientConnection clientConnection;
 
 	/**
 	 * Launch the application.
@@ -61,13 +61,44 @@ public class ChatGUI {
 		initializeTextArea();
 		initializeInputMessageField();
 		initializeEnterButton();
+		initializeUsernameLabel();
 
-		String username = JOptionPane.showInputDialog("Please enter your username: ");
-		this.client = new Client(this.allMessagesTextArea, username);
-		initializeUsernameLabel(username);
-		this.client.start();
-
+		this.clientConnection = new ClientConnection(this);
+		this.clientConnection.start();
 		sendMessageUponExit();
+	}
+	
+	/**
+	 * Set's the text for the usernameLabel
+	 * 
+	 * @precondition username != null
+	 * @postcondition usernameLabel.getText() == username
+	 * 
+	 * @param username The username
+	 */
+	public void setUsernameLabel(String username) {
+		this.usernameLabel.setText(username);
+	}
+	
+	/**
+	 * Adds a message from a client to the text area
+	 * 
+	 * @precondition message != null
+	 * @postcondition allMessagesTextArea.getText() == message
+	 * 
+	 * @param username The username
+	 */
+	public void addMessageToChat(String message) {
+		this.allMessagesTextArea.setText(message);
+	}
+	
+	/**
+	 * Returns the messages within the chat
+	 * 
+	 * @return Chat messages
+	 */
+	public String getChatMessages() {
+		return this.allMessagesTextArea.getText();
 	}
 
 	private void initializeFrame() {
@@ -88,7 +119,7 @@ public class ChatGUI {
 	private void sendMessageUponExit() {
 		frameChatApplication.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
-				client.exitApplication();
+				clientConnection.sendMessageToServer(clientConnection.getCurrentTime() + " Server: " + clientConnection.getUsername() + " has left the chat."); 
 				inputMessageField.setText("");
 				System.exit(0);
 			}
@@ -100,8 +131,13 @@ public class ChatGUI {
 		frameChatApplication.getRootPane().setDefaultButton(enterButton);
 		enterButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				client.sendMessageToServer(inputMessageField.getText());
-				inputMessageField.setText("");
+				if (inputMessageField.getText().equalsIgnoreCase("quit")) {
+					frameChatApplication.dispatchEvent(new WindowEvent(frameChatApplication, WindowEvent.WINDOW_CLOSING));
+				}
+				else {
+					clientConnection.sendMessageToServer(clientConnection.getCurrentTime() + " " + clientConnection.getUsername() + ": " + inputMessageField.getText());
+					inputMessageField.setText("");
+				}
 			}
 		});
 
@@ -117,13 +153,12 @@ public class ChatGUI {
 		inputMessageField.setColumns(10);
 	}
 
-	private void initializeUsernameLabel(String username) {
+	private void initializeUsernameLabel() {
 		usernameLabel = new JLabel("");
 		usernameLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		usernameLabel.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		usernameLabel.setBounds(12, 315, 91, 46);
 		frameChatApplication.getContentPane().add(usernameLabel);
-		usernameLabel.setText(username);
 	}
 
 	private void initializeTextArea() {
