@@ -103,7 +103,8 @@ public class ClientConnection extends Thread {
 					}
 				}
 				else {
-					this.createNewUser();
+					String[] existingUsernames = message.substring(1).split("\\s+");
+					this.createNewUser(existingUsernames);
 				}
 
 			} catch (IOException e) {
@@ -173,9 +174,22 @@ public class ClientConnection extends Thread {
 		this.sendMessageToServer(this.getCurrentTime() + " Server: " + this.username + " has joined the chat.");
 	}
 
-	private void createNewUser() {
-		String username = JOptionPane.showInputDialog("Please enter your username: ");
-		username = username.replaceAll("\\s+","");
+	private void createNewUser(String[] existingUsernames) {
+		String username = null;
+		
+		while (true) {
+			username = JOptionPane.showInputDialog("Please enter your username: ");
+			username = username.replaceAll("\\s+","");
+			boolean usernameFound = false;
+			
+			for (String name : existingUsernames) {
+				if (name.equals(username)) {
+					usernameFound = true;
+				}
+			}
+			if (!usernameFound) break;
+		}
+
 		this.chatGui.setUsernameLabel(username);
 		this.sendMessageToServer(this.getSocketAddress() + " " + username);
 		this.username = username;
@@ -192,7 +206,7 @@ public class ClientConnection extends Thread {
 	}
 
 	private boolean ipAddressFound(String message) {
-		return !message.equals("ip not found");
+		return !(message.charAt(0) == 'n');
 	}
 
 	private void waitOneSecond() {

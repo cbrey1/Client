@@ -153,6 +153,7 @@ public class ChatGUI {
 					frameChatApplication.dispatchEvent(new WindowEvent(frameChatApplication, WindowEvent.WINDOW_CLOSING));
 				}
 				else {
+					if (inputMessageField.getText().trim().isEmpty()) return;
 					clientConnection.sendMessageToServer(clientConnection.getCurrentTime() + " " + clientConnection.getUsername() + ": " + inputMessageField.getText());
 					inputMessageField.setText("");
 				}
