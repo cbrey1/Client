@@ -17,16 +17,19 @@ import javax.swing.text.DefaultCaret;
 import client.ClientConnection;
 
 import javax.swing.JScrollPane;
+import java.awt.Label;
 
 public class ChatGUI {
 
 	private JFrame frameChatApplication;
 	private JTextField inputMessageField;
 	private JTextArea allMessagesTextArea;
+	private JTextArea activeUsersTextArea;
 	private JLabel usernameLabel;
 	private JButton enterButton;
 	private Canvas chatCanvas;
 	private JScrollPane scrollPane;
+	private JScrollPane activeUsersScrollPane;
 	
 	private ClientConnection clientConnection;
 
@@ -62,6 +65,7 @@ public class ChatGUI {
 		initializeInputMessageField();
 		initializeEnterButton();
 		initializeUsernameLabel();
+		initializeActiveUsersTextArea();
 
 		this.clientConnection = new ClientConnection(this);
 		this.clientConnection.start();
@@ -100,12 +104,24 @@ public class ChatGUI {
 	public String getChatMessages() {
 		return this.allMessagesTextArea.getText();
 	}
+	
+	/**
+	 * Sets the activeUsersTextArea text to contain all of the active Usernames
+	 * 
+	 * @precondition users != null
+	 * @postcondition activeUsersTextArea.getText() == users
+	 * 
+	 * @param users Active users
+	 */
+	public void setActiveUsersText(String users) {
+		this.activeUsersTextArea.setText(users);
+	}
 
 	private void initializeFrame() {
 		frameChatApplication = new JFrame();
 		frameChatApplication.setTitle("Chat Application");
 		frameChatApplication.setResizable(false);
-		frameChatApplication.setBounds(100, 100, 614, 421);
+		frameChatApplication.setBounds(100, 100, 772, 421);
 		frameChatApplication.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frameChatApplication.getContentPane().setLayout(null);
 	}
@@ -119,6 +135,7 @@ public class ChatGUI {
 	private void sendMessageUponExit() {
 		frameChatApplication.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
+				clientConnection.sendMessageToServer("i" + clientConnection.getUsername());
 				clientConnection.sendMessageToServer(clientConnection.getCurrentTime() + " Server: " + clientConnection.getUsername() + " has left the chat."); 
 				inputMessageField.setText("");
 				System.exit(0);
@@ -127,7 +144,8 @@ public class ChatGUI {
 	}
 
 	private void initializeEnterButton() {
-		enterButton = new JButton("Enter");
+		enterButton = new JButton("Send");
+		enterButton.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		frameChatApplication.getRootPane().setDefaultButton(enterButton);
 		enterButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -141,14 +159,14 @@ public class ChatGUI {
 			}
 		});
 
-		enterButton.setBounds(453, 315, 143, 46);
+		enterButton.setBounds(638, 315, 103, 46);
 		frameChatApplication.getContentPane().add(enterButton);
 	}
 
 	private void initializeInputMessageField() {
 		inputMessageField = new JTextField();
 		inputMessageField.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		inputMessageField.setBounds(115, 314, 333, 46);
+		inputMessageField.setBounds(171, 315, 455, 46);
 		frameChatApplication.getContentPane().add(inputMessageField);
 		inputMessageField.setColumns(10);
 	}
@@ -157,14 +175,29 @@ public class ChatGUI {
 		usernameLabel = new JLabel("");
 		usernameLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		usernameLabel.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		usernameLabel.setBounds(12, 315, 91, 46);
+		usernameLabel.setBounds(12, 315, 147, 46);
 		frameChatApplication.getContentPane().add(usernameLabel);
+	}
+
+	private void initializeActiveUsersTextArea() {
+		Label activeUsersLabel = new Label("Active Users");
+		activeUsersLabel.setFont(new Font("Dialog", Font.PLAIN, 16));
+		activeUsersLabel.setBounds(38, 19, 103, 24);
+		frameChatApplication.getContentPane().add(activeUsersLabel);
+		
+		activeUsersScrollPane = new JScrollPane();
+		activeUsersScrollPane.setBounds(12, 49, 147, 253);
+		frameChatApplication.getContentPane().add(activeUsersScrollPane);
+		
+		activeUsersTextArea = new JTextArea();
+		activeUsersScrollPane.setViewportView(activeUsersTextArea);
+		activeUsersTextArea.setEditable(false);
 	}
 
 	private void initializeTextArea() {
 		scrollPane = new JScrollPane();
 		scrollPane.setAutoscrolls(true);
-		scrollPane.setBounds(12, 13, 584, 289);
+		scrollPane.setBounds(171, 13, 570, 289);
 		frameChatApplication.getContentPane().add(scrollPane);
 		allMessagesTextArea = new JTextArea();
 		scrollPane.setViewportView(allMessagesTextArea);

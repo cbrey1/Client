@@ -31,11 +31,11 @@ public class ClientConnection extends Thread {
 	 * Creates a ClientConnection object with passed in socket and the Client's
 	 * username
 	 * 
-	 * @precondition socket != null, username != null, textArea != null
-	 * @postcondition this.getName() = username, this.socket = socket,
+	 * @precondition gui != null
+	 * @postcondition this.username = "", this.socket = new Socket("localhost", ,
 	 *                this.dataInputStream = this.socket.getInputStream(),
 	 *                this.dataOutputStream = this.socket.getOutputStream(),
-	 *                this.activeConnection = false; this.chat = textArea
+	 *                this.activeConnection = true;
 	 * @param socket
 	 *            The Socket the client is using
 	 * @param textArea
@@ -45,7 +45,7 @@ public class ClientConnection extends Thread {
 	 */
 	public ClientConnection(ChatGUI gui) {
 		try {
-			this.socket = new Socket("localhost", 6066);;
+			this.socket = new Socket("localhost", 4225);
 			this.dataInputStream = new DataInputStream(this.socket.getInputStream());
 			this.dataOutputStream = new DataOutputStream(this.socket.getOutputStream());
 			this.activeConnection = true;
@@ -91,26 +91,19 @@ public class ClientConnection extends Thread {
 
 				String message = this.dataInputStream.readUTF();
 				
-				if (!message.equals("no")) {
-					if (message.charAt(0) == '_') {
-						this.chatGui.setUsernameLabel(message.substring(1));
-						this.username = message.substring(1);
-						this.sendMessageToServer(this.getCurrentTime() + " Server: " + this.username + " has joined the chat.");
+				if (ipAddressFound(message)) {
+					if (existingUserIsReturning(message)) {
+						handleReturningUser(message);
+					}
+					else if(messageContainsAllActiveUsers(message)) {
+						this.chatGui.setActiveUsersText(message.substring(1));
 					}
 					else {
-						if (chatGui.getChatMessages().isEmpty()) {
-							this.chatGui.addMessageToChat(message);
-						} else {
-							this.chatGui.addMessageToChat(chatGui.getChatMessages() + "\n" + message);
-						}
+						sendMessageToAllOtherUsers(message);
 					}
 				}
 				else {
-					String username = JOptionPane.showInputDialog("Please enter your username: ");
-					this.chatGui.setUsernameLabel(username);
-					this.sendMessageToServer(this.getSocketAddress() + " " + username);
-					this.username = username;
-					this.sendMessageToServer(this.getCurrentTime() + " Server: " + this.username + " has joined the chat.");
+					this.createNewUser();
 				}
 
 			} catch (IOException e) {
@@ -163,6 +156,42 @@ public class ClientConnection extends Thread {
 	 */
 	public String getCurrentTime() {
 		return new SimpleDateFormat("MM/dd/yy HH:mm", Locale.ENGLISH).format(new Date());
+	}
+	
+	private void sendMessageToAllOtherUsers(String message) {
+		if (chatGui.getChatMessages().isEmpty()) {
+			this.chatGui.addMessageToChat(message);
+		} else {
+			this.chatGui.addMessageToChat(chatGui.getChatMessages() + "\n" + message);
+		}
+	}
+
+	private void handleReturningUser(String message) {
+		this.chatGui.setUsernameLabel(message.substring(1));
+		this.username = message.substring(1);
+		this.sendMessageToServer("a" + this.username);
+		this.sendMessageToServer(this.getCurrentTime() + " Server: " + this.username + " has joined the chat.");
+	}
+
+	private void createNewUser() {
+		String username = JOptionPane.showInputDialog("Please enter your username: ");
+		this.chatGui.setUsernameLabel(username);
+		this.sendMessageToServer(this.getSocketAddress() + " " + username);
+		this.username = username;
+		this.sendMessageToServer("a" + this.username);
+		this.sendMessageToServer(this.getCurrentTime() + " Server: " + this.username + " has joined the chat.");
+	}
+
+	private boolean messageContainsAllActiveUsers(String message) {
+		return message.charAt(0) == 'u';
+	}
+
+	private boolean existingUserIsReturning(String message) {
+		return message.charAt(0) == '_';
+	}
+
+	private boolean ipAddressFound(String message) {
+		return !message.equals("ip not found");
 	}
 
 	private void waitOneSecond() {
