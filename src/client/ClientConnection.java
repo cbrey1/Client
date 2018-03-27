@@ -137,7 +137,7 @@ public class ClientConnection extends Thread {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Returns the address of the current socket being used
 	 * 
