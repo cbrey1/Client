@@ -175,6 +175,7 @@ public class ClientConnection extends Thread {
 
 	private void createNewUser() {
 		String username = JOptionPane.showInputDialog("Please enter your username: ");
+		username = username.replaceAll("\\s+","");
 		this.chatGui.setUsernameLabel(username);
 		this.sendMessageToServer(this.getSocketAddress() + " " + username);
 		this.username = username;

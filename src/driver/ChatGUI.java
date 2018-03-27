@@ -190,6 +190,7 @@ public class ChatGUI {
 		frameChatApplication.getContentPane().add(activeUsersScrollPane);
 		
 		activeUsersTextArea = new JTextArea();
+		activeUsersTextArea.setFont(new Font("Monospaced", Font.PLAIN, 18));
 		activeUsersScrollPane.setViewportView(activeUsersTextArea);
 		activeUsersTextArea.setEditable(false);
 	}
