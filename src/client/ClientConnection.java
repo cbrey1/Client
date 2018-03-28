@@ -53,7 +53,8 @@ public class ClientConnection extends Thread {
 			this.username = "";
 		} 
 		catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("No server found. Closing program.");
+			System.exit(0);
 		}
 	}
 
@@ -96,7 +97,13 @@ public class ClientConnection extends Thread {
 						handleReturningUser(message);
 					}
 					else if(messageContainsAllActiveUsers(message)) {
-						this.chatGui.setActiveUsersText(message.substring(1));
+						if (message.equals("username is null")) {
+							String[] existingUsernames = message.substring(1).split("\\s+");
+							this.createNewUser(existingUsernames);
+						}
+						else {
+							this.chatGui.setActiveUsersText(message.substring(1));
+						}
 					}
 					else {
 						sendMessageToAllOtherUsers(message);
@@ -180,6 +187,9 @@ public class ClientConnection extends Thread {
 	}
 
 	private void handleReturningUser(String message) {
+		//if (message.substring(1) == null) {
+			System.out.println(message.substring(1));
+		//}
 		this.chatGui.setUsernameLabel(message.substring(1));
 		this.username = message.substring(1);
 		this.sendMessageToServer("a" + this.username);
@@ -190,13 +200,23 @@ public class ClientConnection extends Thread {
 		String username = null;
 		
 		while (true) {
-			username = JOptionPane.showInputDialog("Please enter your username: ");
+			username = JOptionPane.showInputDialog("Please enter your username: \n (Spaces will be trimmed)");
+			
+			if (username == null) {
+				System.exit(0);
+			}
+			
 			username = username.replaceAll("\\s+","");
 			boolean usernameFound = false;
 			
-			for (String name : existingUsernames) {
-				if (name.equals(username)) {
-					usernameFound = true;
+			if (username.isEmpty()) {
+				usernameFound = true;
+			}
+			else {
+				for (String name : existingUsernames) { 
+					if (name.equals(username)) {
+						usernameFound = true;
+					}
 				}
 			}
 			if (!usernameFound) break;
