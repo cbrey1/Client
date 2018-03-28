@@ -127,6 +127,7 @@ public class ClientConnection extends Thread {
 			this.dataOutputStream.close();
 			this.socket.close();
 			this.activeConnection = false;
+			System.exit(0);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
