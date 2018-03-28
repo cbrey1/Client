@@ -187,9 +187,6 @@ public class ClientConnection extends Thread {
 	}
 
 	private void handleReturningUser(String message) {
-		//if (message.substring(1) == null) {
-			System.out.println(message.substring(1));
-		//}
 		this.chatGui.setUsernameLabel(message.substring(1));
 		this.username = message.substring(1);
 		this.sendMessageToServer("a" + this.username);
