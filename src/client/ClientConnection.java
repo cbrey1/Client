@@ -44,6 +44,9 @@ public class ClientConnection extends Thread {
 	 *            The Client's username
 	 */
 	public ClientConnection(ChatGUI gui) {
+		if (gui == null) {
+			throw new IllegalArgumentException("The passed in Chat GUI is null.");
+		}
 		try {
 			this.socket = new Socket("localhost", 4225);
 			this.dataInputStream = new DataInputStream(this.socket.getInputStream());
@@ -67,6 +70,9 @@ public class ClientConnection extends Thread {
 	 *            Message to be sent by user
 	 */
 	public void sendMessageToServer(String message) {
+		if (message == null) {
+			throw new IllegalArgumentException("Must be a valid message to send to the Server");
+		}
 		try {
 			this.dataOutputStream.writeUTF(message);
 			this.dataOutputStream.flush();
@@ -179,6 +185,9 @@ public class ClientConnection extends Thread {
 	}
 	
 	private void sendMessageToAllOtherUsers(String message) {
+		if (message == null) {
+			throw new IllegalArgumentException("Must be a valid message to add to the chat text area.");
+		}
 		if (chatGui.getChatMessages().isEmpty()) {
 			this.chatGui.addMessageToChat(message);
 		} else {
@@ -187,6 +196,10 @@ public class ClientConnection extends Thread {
 	}
 
 	private void handleReturningUser(String message) {
+		if (message == null) {
+			throw new IllegalArgumentException("Must be a valid message to send to the Server");
+		}
+		
 		this.chatGui.setUsernameLabel(message.substring(1));
 		this.username = message.substring(1);
 		this.sendMessageToServer("a" + this.username);
@@ -194,6 +207,10 @@ public class ClientConnection extends Thread {
 	}
 
 	private void createNewUser(String[] existingUsernames) {
+		if (existingUsernames == null) {
+			throw new IllegalArgumentException("Passed in list of usernames is null");
+		}
+		
 		String username = null;
 		
 		while (true) {
@@ -227,14 +244,23 @@ public class ClientConnection extends Thread {
 	}
 
 	private boolean messageContainsAllActiveUsers(String message) {
+		if (message == null) {
+			throw new IllegalArgumentException("Message is null");
+		}
 		return message.charAt(0) == 'u';
 	}
 
 	private boolean existingUserIsReturning(String message) {
+		if (message == null) {
+			throw new IllegalArgumentException("Message is null");
+		}
 		return message.charAt(0) == '_';
 	}
 
 	private boolean ipAddressFound(String message) {
+		if (message == null) {
+			throw new IllegalArgumentException("Message is null");
+		}
 		return !(message.charAt(0) == 'n');
 	}
 

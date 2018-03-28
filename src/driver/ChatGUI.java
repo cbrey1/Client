@@ -88,6 +88,9 @@ public class ChatGUI {
 	 * @param username The username
 	 */
 	public void setUsernameLabel(String username) {
+		if (username == null) {
+			throw new IllegalArgumentException("Username is null");
+		}
 		this.usernameLabel.setText(username);
 	}
 	
@@ -100,6 +103,9 @@ public class ChatGUI {
 	 * @param username The username
 	 */
 	public void addMessageToChat(String message) {
+		if (message == null) {
+			throw new IllegalArgumentException("Message is null");
+		}
 		this.allMessagesTextArea.setText(message);
 	}
 	
@@ -121,6 +127,9 @@ public class ChatGUI {
 	 * @param users Active users
 	 */
 	public void setActiveUsersText(String users) {
+		if (users == null) {
+			throw new IllegalArgumentException("Passed in list of users is null");
+		}
 		this.activeUsersTextArea.setText(users);
 	}
 
