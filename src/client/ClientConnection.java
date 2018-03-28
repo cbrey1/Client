@@ -172,7 +172,7 @@ public class ClientConnection extends Thread {
 	public String getLogFileName() {
 		String username = this.username;
 		String time = new SimpleDateFormat("MM-dd-yy_HH-mm", Locale.ENGLISH).format(new Date());
-		return "logs/" + username + "_" + time + ".txt";
+		return username + "_" + time + ".txt";
 	}
 	
 	/**
