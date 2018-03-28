@@ -11,6 +11,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.text.DefaultCaret;
@@ -137,16 +144,27 @@ public class ChatGUI {
 			public void windowClosing(WindowEvent e) {
 				clientConnection.sendMessageToServer("i" + clientConnection.getUsername());
 				clientConnection.sendMessageToServer(clientConnection.getCurrentTime() + " Server: " + clientConnection.getUsername() + " has left the chat."); 
-				inputMessageField.setText("");
+				
+				createLogFile();  
 				System.exit(0);
-			}
+			}	
 		});
 	}
 
+	private void createLogFile() {
+		try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(clientConnection.getLogFileName()), StandardCharsets.UTF_8))) {
+		    writer.write(allMessagesTextArea.getText() + "\n" + clientConnection.getCurrentTime() + " Server: " + clientConnection.getUsername() + " has left the chat.");
+		} 
+		catch (IOException ex) {
+		    ex.printStackTrace();
+		}
+	}
+	
 	private void initializeEnterButton() {
 		enterButton = new JButton("Send");
 		enterButton.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		frameChatApplication.getRootPane().setDefaultButton(enterButton);
+		
 		enterButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				if (inputMessageField.getText().equalsIgnoreCase("quit")) {

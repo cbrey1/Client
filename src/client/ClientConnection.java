@@ -151,7 +151,18 @@ public class ClientConnection extends Thread {
 	}
 	
 	/**
-	 * Returns the current date and time
+	 * Returns the file name of the chat log consisting of the Client's username and the current time
+	 * 
+	 * @return The time stamp
+	 */
+	public String getLogFileName() {
+		String username = this.username;
+		String time = new SimpleDateFormat("MM-dd-yy_HH-mm", Locale.ENGLISH).format(new Date());
+		return "logs/" + username + "_" + time + ".txt";
+	}
+	
+	/**
+	 * Returns the current date and time in the form of a time
 	 * 
 	 * @return The current date and time
 	 */
